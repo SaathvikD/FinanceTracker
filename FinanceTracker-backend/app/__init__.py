@@ -15,7 +15,8 @@ def create_app():
     jwt.init_app(app)
 
     with app.app_context():
-        from .routes import routes  # Import the Blueprint
-        app.register_blueprint(routes)  # Register the Blueprint
-        db.create_all()  # Create database tables
-        return app
+        from .routes import register_blueprints
+        register_blueprints(app)
+        db.create_all()
+
+    return app
