@@ -1,20 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import api, { setAuthToken } from '../api/api';
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../context/UserContext'; // Assuming a UserContext for global state management
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { setUser } = useContext(UserContext); // Context to set logged-in user info
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const response = await api.post('/auth/login', { username, password });
       const { token } = response.data;
+
+      // Store the token and username in localStorage
       localStorage.setItem('token', token);
+      localStorage.setItem('username', username);
+
+      // Set the token for future API requests
       setAuthToken(token);
+
+      // Update the global user context
+      setUser({ username });
+
+      // Redirect to the dashboard
       navigate('/dashboard');
     } catch (err) {
       setError('Invalid username or password');
