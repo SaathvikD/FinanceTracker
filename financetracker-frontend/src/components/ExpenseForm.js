@@ -1,63 +1,79 @@
-import React, { useState, useEffect } from 'react';
-
-const ExpenseForm = ({ initialData, onSubmit }) => {
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState('');
-
-  useEffect(() => {
-    if (initialData) {
-      setDescription(initialData.description);
-      setAmount(initialData.amount);
-      setCategory(initialData.category);
-    }
-  }, [initialData]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit({ description, amount, category });
-    setDescription('');
-    setAmount('');
-    setCategory('');
+import React, { useState } from 'react';
+const ExpenseForm = ({ onSubmit, initialData = {} }) => {
+    const [formData, setFormData] = useState({
+      description: initialData.description || '',
+      amount: initialData.amount || '',
+      category: initialData.category || '',
+      date: initialData.date || new Date().toISOString().split('T')[0], // Default to today
+    });
+  
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+      setFormData({ ...formData, [name]: value });
+    };
+  
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      onSubmit(formData);
+      setFormData({
+        description: '',
+        amount: '',
+        category: '',
+        date: new Date().toISOString().split('T')[0],
+      });
+    };
+  
+    return (
+      <form onSubmit={handleSubmit}>
+        <div className="mb-3">
+          <label className="form-label">Description</label>
+          <input
+            type="text"
+            name="description"
+            className="form-control"
+            value={formData.description}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Amount</label>
+          <input
+            type="number"
+            name="amount"
+            className="form-control"
+            value={formData.amount}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Category</label>
+          <input
+            type="text"
+            name="category"
+            className="form-control"
+            value={formData.category}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Date</label>
+          <input
+            type="date"
+            name="date"
+            className="form-control"
+            value={formData.date}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <button type="submit" className="btn btn-primary">
+          Save
+        </button>
+      </form>
+    );
   };
-
-  return (
-    <form onSubmit={handleSubmit} className="mt-3">
-      <div className="mb-3">
-        <label className="form-label">Description</label>
-        <input
-          type="text"
-          className="form-control"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
-      </div>
-      <div className="mb-3">
-        <label className="form-label">Amount</label>
-        <input
-          type="number"
-          className="form-control"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          required
-        />
-      </div>
-      <div className="mb-3">
-        <label className="form-label">Category</label>
-        <input
-          type="text"
-          className="form-control"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          required
-        />
-      </div>
-      <button type="submit" className="btn btn-primary">
-        {initialData ? 'Update Expense' : 'Add Expense'}
-      </button>
-    </form>
-  );
-};
-
-export default ExpenseForm;
+  
+  export default ExpenseForm;

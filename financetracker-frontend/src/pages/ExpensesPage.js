@@ -16,7 +16,6 @@ const ExpensesPage = () => {
     try {
       const response = await api.get('/expenses');
       setExpenses(response.data);
-      setIsFiltered(false); // Reset filter state after fetching all expenses
     } catch (err) {
       console.error('Error fetching expenses:', err);
     }
@@ -25,7 +24,7 @@ const ExpensesPage = () => {
   const handleAddExpense = async (newExpense) => {
     try {
       await api.post('/expenses', newExpense);
-      fetchExpenses(); // Refresh the list after adding
+      fetchExpenses(); // Refresh expenses after adding
     } catch (err) {
       console.error('Error adding expense:', err);
     }

@@ -1,9 +1,13 @@
 import React, { createContext, useState } from 'react';
 
-const UserContext = createContext();
+export const UserContext = createContext();
 
-const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+export const UserProvider = ({ children }) => {
+  const [user, setUser] = useState(
+    localStorage.getItem('username')
+      ? { username: localStorage.getItem('username') }
+      : null
+  );
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
@@ -11,5 +15,3 @@ const UserProvider = ({ children }) => {
     </UserContext.Provider>
   );
 };
-
-export { UserContext, UserProvider };
