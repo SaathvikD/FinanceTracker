@@ -2,68 +2,51 @@ import React, { useState, useEffect } from 'react';
 import api from '../api/api';
 
 const DashboardPage = () => {
-  const [dailyExpenses, setDailyExpenses] = useState({});
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [dailySummary, setDailySummary] = useState([]);
 
   useEffect(() => {
-    fetchExpenses();
+    fetchDailySummary();
   }, []);
 
-  const fetchExpenses = async () => {
+  const fetchDailySummary = async () => {
     try {
       const response = await api.get('/expenses');
-      const groupedExpenses = groupByDate(response.data);
-      setDailyExpenses(groupedExpenses);
-    } catch (err) {
-      console.error('Error fetching expenses:', err);
-    }
-  };
+      const expenses = response.data;
 
-  const groupByDate = (expenses) => {
-    return expenses.reduce((acc, expense) => {
-      const date = new Date(expense.date).toLocaleDateString();
-      if (!acc[date]) acc[date] = [];
-      acc[date].push(expense);
-      return acc;
-    }, {});
+      const summary = expenses.reduce((acc, expense) => {
+        const date = new Date(expense.date).toLocaleDateString();
+        if (!acc[date]) acc[date] = { total: 0, details: [] };
+        acc[date].total += parseFloat(expense.amount);
+        acc[date].details.push(expense);
+        return acc;
+      }, {});
+
+      setDailySummary(Object.entries(summary));
+    } catch (err) {
+      console.error('Error fetching daily summary:', err);
+    }
   };
 
   return (
     <div className="container mt-5">
       <h2>Dashboard</h2>
-      <div className="row">
-        <div className="col-6">
-          <h3>Daily Totals</h3>
-          <ul className="list-group">
-            {Object.keys(dailyExpenses).map((date) => (
-              <li
-                key={date}
-                className="list-group-item d-flex justify-content-between align-items-center"
-                onClick={() => setSelectedDate(date)}
-                style={{ cursor: 'pointer' }}
-              >
-                {date}
-                <span className="badge bg-primary rounded-pill">
-                  ${dailyExpenses[date].reduce((sum, exp) => sum + parseFloat(exp.amount), 0).toFixed(2)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="col-6">
-          {selectedDate && (
-            <>
-              <h3>Expenses for {selectedDate}</h3>
-              <ul className="list-group">
-                {dailyExpenses[selectedDate].map((expense) => (
-                  <li key={expense.id} className="list-group-item">
-                    <strong>{expense.description}</strong> - ${expense.amount} ({expense.category})
+      <div className="mt-4">
+        {dailySummary.map(([date, { total, details }]) => (
+          <div key={date} className="mb-4">
+            <h4>{date}</h4>
+            <p>Total Expenditure: ${total.toFixed(2)}</p>
+            <details>
+              <summary>View Details</summary>
+              <ul>
+                {details.map((expense) => (
+                  <li key={expense.id}>
+                    {expense.description} - ${expense.amount} ({expense.category})
                   </li>
                 ))}
               </ul>
-            </>
-          )}
-        </div>
+            </details>
+          </div>
+        ))}
       </div>
     </div>
   );

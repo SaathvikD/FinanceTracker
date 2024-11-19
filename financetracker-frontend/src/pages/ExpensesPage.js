@@ -4,7 +4,8 @@ import ExpenseForm from '../components/ExpenseForm';
 
 const ExpensesPage = () => {
   const [expenses, setExpenses] = useState([]);
-  const [editExpense, setEditExpense] = useState(null); // Track the expense to edit
+  const [editExpense, setEditExpense] = useState(null);
+  const [filters, setFilters] = useState({ category: '', startDate: '', endDate: '' });
 
   useEffect(() => {
     fetchExpenses();
@@ -19,6 +20,15 @@ const ExpensesPage = () => {
     }
   };
 
+  const handleAddExpense = async (newExpense) => {
+    try {
+      await api.post('/expenses', newExpense);
+      fetchExpenses(); // Refresh the list after adding
+    } catch (err) {
+      console.error('Error adding expense:', err);
+    }
+  };
+
   const handleDelete = async (id) => {
     try {
       await api.delete(`/expenses/${id}`);
@@ -29,23 +39,71 @@ const ExpensesPage = () => {
   };
 
   const handleEdit = (expense) => {
-    setEditExpense(expense); // Set the expense to edit
+    setEditExpense(expense);
   };
 
   const handleSave = async (updatedExpense) => {
     try {
       await api.put(`/expenses/${editExpense.id}`, updatedExpense);
-      setEditExpense(null); // Clear the edit state
+      setEditExpense(null);
       fetchExpenses();
     } catch (err) {
       console.error('Error updating expense:', err);
     }
   };
 
+  const handleFilter = async () => {
+    try {
+      const query = new URLSearchParams(filters).toString();
+      const response = await api.get(`/expenses/filter?${query}`);
+      setExpenses(response.data);
+    } catch (err) {
+      console.error('Error filtering expenses:', err);
+    }
+  };
+
   return (
     <div className="container mt-5">
       <h2>Expenses</h2>
-      <table className="table">
+      <div className="mb-3">
+        <h3>Filters</h3>
+        <div className="row g-2">
+          <div className="col">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Category"
+              value={filters.category}
+              onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+            />
+          </div>
+          <div className="col">
+            <input
+              type="date"
+              className="form-control"
+              placeholder="Start Date"
+              value={filters.startDate}
+              onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+            />
+          </div>
+          <div className="col">
+            <input
+              type="date"
+              className="form-control"
+              placeholder="End Date"
+              value={filters.endDate}
+              onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+            />
+          </div>
+          <div className="col">
+            <button className="btn btn-primary" onClick={handleFilter}>
+              Apply Filters
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <table className="table mt-3">
         <thead>
           <tr>
             <th>Date</th>
@@ -74,10 +132,16 @@ const ExpensesPage = () => {
           ))}
         </tbody>
       </table>
-      {editExpense && (
+
+      {editExpense ? (
         <div>
           <h3>Edit Expense</h3>
           <ExpenseForm initialData={editExpense} onSubmit={handleSave} />
+        </div>
+      ) : (
+        <div>
+          <h3>Add New Expense</h3>
+          <ExpenseForm onSubmit={handleAddExpense} />
         </div>
       )}
     </div>

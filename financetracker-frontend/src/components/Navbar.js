@@ -1,26 +1,53 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-const Navbar = () => {
+const Navbar = ({ username, onLogout }) => {
+  const navigate = useNavigate();
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container-fluid">
-        <Link className="navbar-brand" to="/">Finance Tracker</Link>
+        <span className="navbar-brand">Finance Tracker</span>
         <div className="collapse navbar-collapse">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+          <ul className="navbar-nav me-auto">
             <li className="nav-item">
-              <Link className="nav-link" to="/login">Login</Link>
+              <button className="btn btn-link nav-link" onClick={() => navigate('/dashboard')}>
+                Dashboard
+              </button>
             </li>
             <li className="nav-item">
-            <Link className="nav-link" to="/signup">Sign Up</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/dashboard">Dashboard</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/expenses">Expenses</Link>
+              <button className="btn btn-link nav-link" onClick={() => navigate('/expenses')}>
+                Expenses
+              </button>
             </li>
           </ul>
+          {username ? (
+            <div className="dropdown">
+              <button
+                className="btn btn-link dropdown-toggle"
+                type="button"
+                id="userDropdown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                {username}
+              </button>
+              <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li>
+                  <button className="dropdown-item" onClick={onLogout}>
+                    Logout
+                  </button>
+                </li>
+              </ul>
+            </div>
+          ) : (
+            <button
+              className="btn btn-outline-primary"
+              onClick={() => navigate('/login')}
+            >
+              Login
+            </button>
+          )}
         </div>
       </div>
     </nav>

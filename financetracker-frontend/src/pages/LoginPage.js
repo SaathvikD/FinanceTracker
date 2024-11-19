@@ -15,7 +15,7 @@ const LoginPage = () => {
       const { token } = response.data;
       localStorage.setItem('token', token);
       setAuthToken(token);
-      navigate('/expenses');
+      navigate('/dashboard');
     } catch (err) {
       setError('Invalid username or password');
     }
@@ -50,6 +50,15 @@ const LoginPage = () => {
         </button>
         {error && <p className="text-danger mt-3">{error}</p>}
       </form>
+      <p className="mt-3">
+        Don't have an account?{' '}
+        <button
+          className="btn btn-link p-0 text-decoration-underline"
+          onClick={() => navigate('/signup')}
+        >
+          Sign-up Now!
+        </button>
+      </p>
     </div>
   );
 };

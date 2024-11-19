@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import api from '../api/api';
+import api, { setAuthToken } from '../api/api';
 import { useNavigate } from 'react-router-dom';
 
 const SignupPage = () => {
@@ -12,8 +12,15 @@ const SignupPage = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/auth/signup', { username, email, password });
-      navigate('/login'); // Redirect to login after successful signup
+      // Sign up the user
+      const response = await api.post('/auth/signup', { username, email, password });
+      
+      // Automatically log them in
+      const loginResponse = await api.post('/auth/login', { username, password });
+      const { token } = loginResponse.data;
+      localStorage.setItem('token', token);
+      setAuthToken(token);
+      navigate('/dashboard');
     } catch (err) {
       setError('Failed to sign up. Please try again.');
     }
