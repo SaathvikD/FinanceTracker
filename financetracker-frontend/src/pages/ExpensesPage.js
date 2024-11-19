@@ -72,7 +72,15 @@ const ExpensesPage = () => {
   return (
     <div className="container mt-5">
       <h2>Expenses</h2>
-      <div className="mb-3">
+
+      {/* Add Expense Form */}
+      <div>
+        <h3>Add New Expense</h3>
+        <ExpenseForm onSubmit={handleAddExpense} />
+      </div>
+
+      {/* Filters */}
+      <div className="my-4">
         <h3>Filters</h3>
         <div className="row g-2 align-items-center">
           <div className="col-md-3">
@@ -115,6 +123,7 @@ const ExpensesPage = () => {
         </div>
       </div>
 
+      {/* Transaction History Table */}
       <table className="table mt-3">
         <thead>
           <tr>
@@ -159,15 +168,10 @@ const ExpensesPage = () => {
         </tbody>
       </table>
 
-      {editExpense ? (
+      {editExpense && (
         <div>
           <h3>Edit Expense</h3>
           <ExpenseForm initialData={editExpense} onSubmit={handleSave} />
-        </div>
-      ) : (
-        <div>
-          <h3>Add New Expense</h3>
-          <ExpenseForm onSubmit={handleAddExpense} />
         </div>
       )}
     </div>
