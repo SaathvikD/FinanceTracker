@@ -49,8 +49,8 @@ cd FinanceTracker-backend
 	2.	Create and activate a Python virtual environment:
 
 python -m venv env
-source env/bin/activate  # macOS/Linux
-env\Scripts\activate     # Windows
+source ../env/bin/activate # macOS/Linux
+..\env\Scripts\activate     # Windows
 
 
 	3.	Install dependencies:
@@ -61,6 +61,9 @@ pip install -r requirements.txt
 	4.	Run the Flask server:
 
 flask run
+
+
+When finished in order to exit the virtual environment, type deactivate
 
 
 
